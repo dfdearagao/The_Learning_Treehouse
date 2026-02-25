@@ -1,5 +1,5 @@
 import React from 'react';
-import { SubjectItem, GameItem } from '../types';
+import { SubjectItem, GameItem } from '../types/types';
 import { ArrowLeft, Play, Star, BookOpen, Layers, ArrowRight, GraduationCap } from 'lucide-react';
 
 interface SubjectPageProps {

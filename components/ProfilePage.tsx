@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, StoreItem } from '../types';
+import { User, StoreItem } from '../types/types';
 import { ArrowLeft, Save, User as UserIcon, Palette, Package } from 'lucide-react';
 import { STORE_ITEMS } from '../constants';
 

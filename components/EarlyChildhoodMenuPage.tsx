@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { EarlyChildhoodCategory } from '../types';
+import { EarlyChildhoodCategory } from '../types/types';
 import { ArrowLeft, MousePointer2 } from 'lucide-react';
 import { EARLY_CHILDHOOD_CATEGORIES } from '../constants';
 

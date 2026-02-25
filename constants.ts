@@ -39,7 +39,7 @@ import {
   Timer,
   Lightbulb
 } from 'lucide-react';
-import { FeatureItem, SubjectItem, User, EarlyChildhoodItem, GameItem, EarlyChildhoodCategory, StoreItem, Unit } from './types';
+import { FeatureItem, SubjectItem, User, EarlyChildhoodItem, GameItem, EarlyChildhoodCategory, StoreItem, Unit } from './types/types';
 import { LESSON_CATALOG } from './lessonCatalog';
 
 export const MOCK_USER: User = {

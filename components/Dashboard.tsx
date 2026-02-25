@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { User } from '../types';
+import { User } from '../types/types';
 import { Star, Coins, Trophy, BookOpen, Gamepad2, Palette, Brain, Rocket, User as UserIcon, ShoppingBag, Home, ArrowRight, Calendar as CalendarIcon, CheckSquare, Check, Sparkles } from 'lucide-react';
 import { CORE_SUBJECTS, EARLY_CHILDHOOD, EARLY_CHILDHOOD_CATEGORIES } from '../constants';
 import EarlyChildhoodCard from './EarlyChildhoodCard';
@@ -16,6 +16,7 @@ interface DashboardProps {
   onEarlyChildhoodClick: () => void;
   onSpaceJumpClick: () => void;
   onStellarPopClick: () => void;
+  onBrainGymClick: () => void;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ 
@@ -28,7 +29,8 @@ const Dashboard: React.FC<DashboardProps> = ({
     onParentTeacherClick,
     onEarlyChildhoodClick,
     onSpaceJumpClick,
-    onStellarPopClick
+    onStellarPopClick,
+    onBrainGymClick
 }) => {
   // --- Calendar Logic ---
   const today = new Date();
@@ -294,15 +296,16 @@ const Dashboard: React.FC<DashboardProps> = ({
                 </div>
              </button>
 
-             {/* Card 4: Brain Gym */}
+             {/* Card 4: Word Stack */}
              <button 
+                onClick={onBrainGymClick}
                 className="w-full h-full min-h-[260px] p-6 rounded-3xl bg-white shadow-lg hover:shadow-xl transition-all flex flex-col justify-between items-start border-b-8 border-stone-100 active:border-stone-50 active:translate-y-2 group hover:bg-blue-50"
              >
                 <div className="p-4 rounded-2xl bg-blue-100 text-blue-600 group-hover:scale-110 transition-transform">
                     <Brain size={40} />
                 </div>
                 <div className="text-left w-full">
-                    <span className="text-2xl font-black text-slate-700 block mb-2">Brain Gym</span>
+                    <span className="text-2xl font-black text-slate-700 block mb-2">Word Stack</span>
                     <div className="flex items-center gap-2 text-blue-500 font-bold text-sm bg-white/50 px-3 py-1 rounded-full w-fit">
                         Train <ArrowRight size={16} />
                     </div>

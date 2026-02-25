@@ -1,8 +1,8 @@
-import { UnitData } from '../types';
+import { UnitData } from '../types/types';
 import { BookOpen, Trophy, Pencil } from 'lucide-react';
-import { SCIENCE_LEARN } from '../scienceLearn';
-import { SCIENCE_PRACTICE } from '../sciencePractice';
-import { SCIENCE_ASSESS } from '../scienceAssess';
+import { SCIENCE_LEARN } from '../science/scienceLearn';
+import { SCIENCE_PRACTICE } from '../science/sciencePractice';
+import { SCIENCE_ASSESS } from '../science/scienceAssess';
 import { getLessonContentFromSplit } from '../questionUtils';
 
 export const generateScienceUnit = (grade: string, lessonId: number, lessonTitle: string): UnitData => {

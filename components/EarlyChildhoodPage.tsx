@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { EarlyChildhoodCategory } from '../types';
+import { EarlyChildhoodCategory } from '../types/types';
 import { ArrowLeft, Star, Play, Lock } from 'lucide-react';
 import { EC_CONTENT, ECActivity } from '../earlyChildhoodContent';
 import EarlyChildhoodPlayer from './EarlyChildhoodPlayer';

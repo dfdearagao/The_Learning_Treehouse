@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { MOCK_USER, CORE_SUBJECTS, EARLY_CHILDHOOD_CATEGORIES } from './constants';
-import { User, StoreItem, GameItem, PlacedItem } from './types';
+import { User, StoreItem, GameItem, PlacedItem } from './types/types';
 import Dashboard from './components/Dashboard';
 import HomePage from './components/HomePage';
 import FeaturesPage from './components/FeaturesPage';
@@ -22,11 +22,12 @@ import EarlyChildhoodPage from './components/EarlyChildhoodPage';
 import EarlyChildhoodMenuPage from './components/EarlyChildhoodMenuPage';
 import SpaceJumpApp from './components/SpaceJumpApp';
 import StellarPopApp from './components/StellarPopApp';
+import WordStack from './components/WS/WordStack';
 import MembershipPage from './components/MembershipPage';
 import { Menu, X, LogIn, TreeDeciduous, Crown } from 'lucide-react';
 import { playSound } from './utils/sound';
 
-type Page = 'home' | 'features' | 'how-it-works' | 'subject' | 'grade-subject' | 'unit' | 'arcade' | 'profile' | 'store' | 'parent-teacher' | 'join' | 'treehouse' | 'early-childhood' | 'early-childhood-menu' | 'lesson-summaries' | 'grade-summary-detail' | 'space-jump' | 'stellar-pop' | 'membership';
+type Page = 'home' | 'features' | 'how-it-works' | 'subject' | 'grade-subject' | 'unit' | 'arcade' | 'profile' | 'store' | 'parent-teacher' | 'join' | 'treehouse' | 'early-childhood' | 'early-childhood-menu' | 'lesson-summaries' | 'grade-summary-detail' | 'space-jump' | 'stellar-pop' | 'membership' | 'word-stack';
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -542,6 +543,23 @@ export default function App() {
                 />
             )}
 
+            {/* WORD STACK GAME */}
+            {currentPage === 'word-stack' && (
+                <WordStack 
+                    onClose={() => {
+                        playSound('click');
+                        setCurrentPage('home');
+                    }}
+                    onScoreUpdate={(score) => {
+                        setUser(prev => ({
+                            ...prev,
+                            xp: prev.xp + Math.floor(score / 10),
+                            coins: prev.coins + Math.floor(score / 50)
+                        }));
+                    }}
+                />
+            )}
+
             {/* HOME DASHBOARD */}
             {currentPage === 'home' && (
                <Dashboard 
@@ -555,6 +573,7 @@ export default function App() {
                   onEarlyChildhoodClick={() => navigateTo('early-childhood-menu')}
                   onSpaceJumpClick={() => navigateTo('space-jump')}
                   onStellarPopClick={() => navigateTo('stellar-pop')}
+                  onBrainGymClick={() => navigateTo('word-stack')}
                />
             )}
           </>

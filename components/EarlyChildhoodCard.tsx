@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { EarlyChildhoodItem } from '../types';
+import { EarlyChildhoodItem } from '../types/types';
 import { ArrowRight } from 'lucide-react';
 
 interface EarlyChildhoodCardProps extends EarlyChildhoodItem {

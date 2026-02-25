@@ -1,8 +1,8 @@
-import { UnitData } from '../types';
+import { UnitData } from '../types/types';
 import { BookOpen, Trophy, Pencil } from 'lucide-react';
-import { SS_LEARN } from '../socialStudiesLearn';
-import { SS_PRACTICE } from '../socialStudiesPractice';
-import { SS_ASSESS } from '../socialStudiesAssess';
+import { SS_LEARN } from '../socialStudies/socialStudiesLearn';
+import { SS_PRACTICE } from '../socialStudies/socialStudiesPractice';
+import { SS_ASSESS } from '../socialStudies/socialStudiesAssess';
 import { getLessonContentFromSplit } from '../questionUtils';
 
 export const generateSSUnit = (grade: string, lessonId: number, lessonTitle: string): UnitData => {

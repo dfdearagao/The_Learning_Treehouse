@@ -1,13 +1,13 @@
 
 import React, { useState } from 'react';
-import { User } from '../types';
-import { ViewState, Subject, AvatarConfig, UserProgress } from '../types_BQ';
-import AvatarEditor from './AvatarEditor_BQ';
-import WorldMap from './WorldMap_BQ';
-import LevelMap from './LevelMap_BQ';
-import GameLevel from './GameLevel_BQ';
-import BossBattle from './BossBattle_BQ';
-import ParentDashboard from './ParentDashboard_BQ';
+import { User } from '../types/types';
+import { ViewState, Subject, AvatarConfig, UserProgress } from '../types/types_BQ';
+import AvatarEditor from './BQ/AvatarEditor_BQ';
+import WorldMap from './BQ/WorldMap_BQ';
+import LevelMap from './BQ/LevelMap_BQ';
+import GameLevel from './BQ/GameLevel_BQ';
+import BossBattle from './BQ/BossBattle_BQ';
+import ParentDashboard from './BQ/ParentDashboard_BQ';
 import { soundManager } from '../utils/soundService_BQ';
 
 interface SpaceJumpAppProps {

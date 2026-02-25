@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { SubjectItem, User } from '../types';
-import { Unit, Lesson } from '../types';
+import { SubjectItem, User } from '../types/types';
+import { Unit, Lesson } from '../types/types';
 import { MATH_CURRICULUM, READING_CURRICULUM, SCIENCE_CURRICULUM, SOCIAL_STUDIES_CURRICULUM } from '../constants';
 import { 
   ArrowLeft, 

@@ -1,8 +1,8 @@
-import { UnitData } from '../types';
+import { UnitData } from '../types/types';
 import { BookOpen, Trophy, Pencil } from 'lucide-react';
-import { READING_LEARN } from '../readingLearn';
-import { READING_PRACTICE } from '../readingPractice';
-import { READING_ASSESS } from '../readingAssess';
+import { READING_LEARN } from '../reading/readingLearn';
+import { READING_PRACTICE } from '../reading/readingPractice';
+import { READING_ASSESS } from '../reading/readingAssess';
 import { getLessonContentFromSplit } from '../questionUtils';
 
 export const generateReadingUnit = (grade: string, lessonId: number, lessonTitle: string): UnitData => {

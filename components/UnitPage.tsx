@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { SubjectItem, UnitData, Worksheet } from '../types';
+import { SubjectItem, UnitData, Worksheet } from '../types/types';
 import { MATH_CURRICULUM, READING_CURRICULUM, SCIENCE_CURRICULUM, SOCIAL_STUDIES_CURRICULUM } from '../constants';
 import { 
   ArrowLeft, 
@@ -20,10 +20,10 @@ import { generateMathUnit } from './MathGenerator';
 import { generateReadingUnit } from './ReadingGenerator';
 import { generateScienceUnit } from './ScienceGenerator';
 import { generateSSUnit } from './SocialStudiesGenerator';
-import { getMathWorksheets } from '../mathWorksheets';
-import { getReadingWorksheets } from '../readingWorksheets';
-import { getScienceWorksheets } from '../scienceWorksheets';
-import { getSSWorksheets } from '../socialStudiesWorksheets';
+import { getMathWorksheets } from '../math/mathWorksheets';
+import { getReadingWorksheets } from '../reading/readingWorksheets';
+import { getScienceWorksheets } from '../science/scienceWorksheets';
+import { getSSWorksheets } from '../socialStudies/socialStudiesWorksheets';
 import { playSound } from '../utils/sound';
 
 interface UnitPageProps {

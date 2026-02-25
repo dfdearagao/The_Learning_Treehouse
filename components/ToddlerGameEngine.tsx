@@ -481,60 +481,160 @@ const ToddlerGameEngine: React.FC<ToddlerGameEngineProps> = ({ activity, onCompl
     // 6. Jigsaw Puzzles
     const renderPuzzles = () => {
         const puzzle = puzzles[roundIndex];
-        const [assembledParts, setAssembledParts] = useState<string[]>([]);
-        const targetRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+        const rows = puzzle.rows || 2;
+        const cols = puzzle.cols || 2;
+        const totalPieces = rows * cols;
+        
+        const [placedPieces, setPlacedPieces] = useState<number[]>([]);
+        const [shuffledPieces, setShuffledPieces] = useState<number[]>([]);
+        const slotRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
 
-        const handleDragEnd = (event: any, info: any, part: string) => {
-            const targetElement = targetRefs.current[part];
-            if (targetElement) {
-                const rect = targetElement.getBoundingClientRect();
+        // Initialize shuffled pieces
+        useEffect(() => {
+            const pieces = Array.from({ length: totalPieces }, (_, i) => i);
+            setShuffledPieces(pieces.sort(() => Math.random() - 0.5));
+            setPlacedPieces([]);
+        }, [roundIndex, totalPieces]);
+
+        const handleDragEnd = (event: any, info: any, pieceIndex: number) => {
+            const slotElement = slotRefs.current[pieceIndex];
+            if (slotElement) {
+                const rect = slotElement.getBoundingClientRect();
+                const slotCenterX = rect.left + rect.width / 2;
+                const slotCenterY = rect.top + rect.height / 2;
+                
+                // Use the pointer position from info.point
                 const { x, y } = info.point;
                 
-                if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+                // Calculate distance between pointer and slot center
+                const distance = Math.sqrt(
+                    Math.pow(x - slotCenterX, 2) + Math.pow(y - slotCenterY, 2)
+                );
+                
+                // Very lenient snapping: if pointer is within 100px of slot center
+                if (distance < 100) {
                     playSound('pop');
-                    setAssembledParts(prev => [...prev, part]);
-                    if (assembledParts.length + 1 === puzzle.parts.length) {
-                        setTimeout(handleCorrect, 500);
-                    }
+                    setPlacedPieces(prev => {
+                        if (prev.includes(pieceIndex)) return prev;
+                        const next = [...prev, pieceIndex];
+                        if (next.length === totalPieces) {
+                            setTimeout(handleCorrect, 800);
+                        }
+                        return next;
+                    });
+                    setShuffledPieces(prev => prev.filter(p => p !== pieceIndex));
                 } else {
-                    handleWrong();
+                    playSound('click');
                 }
             }
         };
 
+        const pieceWidth = 140;
+        const pieceHeight = 140;
+
         return (
-            <div className="flex flex-col items-center justify-center h-full py-4">
-                <h2 className="text-3xl font-black text-slate-800 mb-12">Assemble the {puzzle.name}!</h2>
-                <div className="flex gap-12 items-center">
-                    <div className="flex flex-col gap-4">
-                        {puzzle.parts.map((part: string) => (
-                            !assembledParts.includes(part) && (
-                                <motion.div
-                                    key={part}
-                                    drag
-                                    dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-                                    dragElastic={1}
-                                    onDragEnd={(e, info) => handleDragEnd(e, info, part)}
-                                    whileDrag={{ scale: 1.1, zIndex: 50 }}
-                                    className="w-32 h-32 bg-white rounded-2xl shadow-lg flex items-center justify-center text-2xl font-bold cursor-grab active:cursor-grabbing border-4 border-white text-center p-2"
+            <div className="flex flex-col items-center justify-center h-full py-4 px-4 md:px-8 overflow-hidden bg-slate-50/50">
+                <h2 className="text-2xl md:text-3xl font-black text-slate-800 mb-6 text-center">Assemble the {puzzle.name}!</h2>
+                
+                <div className="flex flex-col lg:flex-row items-center justify-center gap-8 md:gap-12 w-full max-w-6xl">
+                    {/* The Puzzle Board */}
+                    <div 
+                        className="relative bg-white rounded-[2.5rem] p-4 shadow-2xl border-4 border-slate-200 z-0"
+                        style={{
+                            display: 'grid',
+                            gridTemplateColumns: `repeat(${cols}, ${pieceWidth}px)`,
+                            gridTemplateRows: `repeat(${rows}, ${pieceHeight}px)`,
+                            gap: '4px'
+                        }}
+                    >
+                        {/* Background Guide (Ghost Image) */}
+                        <div 
+                            className="absolute inset-4 opacity-20 pointer-events-none rounded-2xl overflow-hidden"
+                            style={{
+                                backgroundImage: `url(${puzzle.image})`,
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center',
+                                zIndex: 0
+                            }}
+                        />
+
+                        {Array.from({ length: totalPieces }).map((_, i) => {
+                            const isPlaced = placedPieces.includes(i);
+                            const row = Math.floor(i / cols);
+                            const col = i % cols;
+
+                            return (
+                                <div
+                                    key={i}
+                                    ref={el => slotRefs.current[i] = el}
+                                    className={`relative z-10 w-full h-full rounded-xl border-2 border-slate-100 flex items-center justify-center transition-all ${
+                                        isPlaced ? 'bg-transparent border-transparent' : 'bg-slate-50/30'
+                                    }`}
                                 >
-                                    {part}
-                                </motion.div>
-                            )
-                        ))}
+                                    {isPlaced && (
+                                        <motion.div
+                                            initial={{ scale: 1.1, opacity: 0 }}
+                                            animate={{ scale: 1, opacity: 1 }}
+                                            className="w-full h-full rounded-lg shadow-sm"
+                                            style={{
+                                                backgroundImage: `url(${puzzle.image})`,
+                                                backgroundSize: `${cols * 100}% ${rows * 100}%`,
+                                                backgroundPosition: `${cols > 1 ? (col / (cols - 1)) * 100 : 0}% ${rows > 1 ? (row / (rows - 1)) * 100 : 0}%`,
+                                                opacity: 1
+                                            }}
+                                        />
+                                    )}
+                                </div>
+                            );
+                        })}
                     </div>
-                    <div className="grid grid-cols-2 gap-2 bg-white/30 border-4 border-dashed border-slate-200 rounded-[2rem] p-4">
-                        {puzzle.parts.map((part: string) => (
-                            <div
-                                key={part}
-                                ref={el => targetRefs.current[part] = el}
-                                className={`w-32 h-32 rounded-xl flex items-center justify-center text-2xl font-bold transition-all text-center p-2 ${
-                                    assembledParts.includes(part) ? 'bg-white shadow-md' : 'bg-transparent'
-                                }`}
+
+                    {/* The Piece Tray */}
+                    <div className="flex-1 min-h-[300px] lg:min-h-[450px] w-full bg-white/80 rounded-[3rem] p-8 md:p-12 border-4 border-dashed border-slate-200 flex flex-wrap items-center justify-center gap-6 md:gap-10 shadow-inner z-10">
+                        <AnimatePresence>
+                            {shuffledPieces.map((pieceIndex) => {
+                                const row = Math.floor(pieceIndex / cols);
+                                const col = pieceIndex % cols;
+                                
+                                return (
+                                    <motion.div
+                                        key={pieceIndex}
+                                        layout
+                                        initial={{ scale: 0, opacity: 0 }}
+                                        animate={{ scale: 1, opacity: 1 }}
+                                        exit={{ scale: 0, opacity: 0 }}
+                                        drag
+                                        dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+                                        dragElastic={0.9}
+                                        onDragEnd={(e, info) => handleDragEnd(e, info, pieceIndex)}
+                                        whileDrag={{ 
+                                            scale: 1.15, 
+                                            zIndex: 1000, 
+                                            opacity: 1,
+                                            boxShadow: "0 30px 60px -12px rgb(0 0 0 / 0.4)" 
+                                        }}
+                                        className="w-[110px] h-[110px] md:w-[140px] md:h-[140px] bg-white rounded-2xl shadow-xl cursor-grab active:cursor-grabbing border-4 border-white overflow-hidden ring-2 ring-slate-100 relative"
+                                        style={{
+                                            backgroundImage: `url(${puzzle.image})`,
+                                            backgroundSize: `${cols * 100}% ${rows * 100}%`,
+                                            backgroundPosition: `${cols > 1 ? (col / (cols - 1)) * 100 : 0}% ${rows > 1 ? (row / (rows - 1)) * 100 : 0}%`,
+                                            opacity: 1
+                                        }}
+                                    />
+                                );
+                            })}
+                        </AnimatePresence>
+                        
+                        {shuffledPieces.length === 0 && placedPieces.length === totalPieces && (
+                            <motion.div 
+                                initial={{ opacity: 0, scale: 0.5 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="text-center"
                             >
-                                {assembledParts.includes(part) ? part : ''}
-                            </div>
-                        ))}
+                                <Trophy size={100} className="text-yellow-400 mx-auto mb-6 drop-shadow-xl" />
+                                <p className="text-3xl font-black text-slate-800 uppercase tracking-widest">Puzzle Complete!</p>
+                            </motion.div>
+                        )}
                     </div>
                 </div>
             </div>

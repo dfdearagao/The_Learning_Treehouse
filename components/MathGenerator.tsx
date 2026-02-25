@@ -1,8 +1,8 @@
-import { UnitData } from '../types';
+import { UnitData } from '../types/types';
 import { BookOpen, Trophy, Pencil } from 'lucide-react';
-import { MATH_LEARN } from '../mathLearn';
-import { MATH_PRACTICE } from '../mathPractice';
-import { MATH_ASSESS } from '../mathAssess';
+import { MATH_LEARN } from '../math/mathLearn';
+import { MATH_PRACTICE } from '../math/mathPractice';
+import { MATH_ASSESS } from '../math/mathAssess';
 import { getLessonContentFromSplit } from '../questionUtils';
 
 export const generateMathUnit = (grade: string, lessonId: number, lessonTitle: string): UnitData => {

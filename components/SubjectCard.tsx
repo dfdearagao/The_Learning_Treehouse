@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { SubjectItem } from '../types';
+import { SubjectItem } from '../types/types';
 import { ArrowRight } from 'lucide-react';
 
 interface SubjectCardProps extends SubjectItem {

@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { GameItem } from '../types';
+import { GameItem } from '../types/types';
 import { X, Trophy, RotateCcw, Play, CheckCircle } from 'lucide-react';
 import { playSound } from '../utils/sound';
 

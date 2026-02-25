@@ -1,4 +1,4 @@
-import { Question, InteractiveData } from './types';
+import { Question, InteractiveData } from './types/types';
 
 export interface QuestionTemplate {
     q: string;

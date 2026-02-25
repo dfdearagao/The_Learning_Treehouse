@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { FeatureItem } from '../types';
+import { FeatureItem } from '../types/types';
 
 const FeatureCard: React.FC<FeatureItem> = ({ title, description, icon: Icon, colorClass }) => {
   return (

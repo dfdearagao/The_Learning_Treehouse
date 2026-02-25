@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
-import HomeScreen from './HomeScreen_SP';
-import GeminiSlingshot from './GeminiSlingshot_SP';
-import { HighScore } from '../types_SP';
+import HomeScreen from './SP/HomeScreen_SP';
+import GeminiSlingshot from './SP/GeminiSlingshot_SP';
+import { HighScore } from '../types/types_SP';
 import { ArrowLeft } from 'lucide-react';
 
 interface StellarPopAppProps {

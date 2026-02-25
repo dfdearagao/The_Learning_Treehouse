@@ -1108,8 +1108,30 @@ export const EC_CONTENT: Record<string, ECActivity[]> = {
             data: {
                 gameId: 'puzzles',
                 puzzles: [
-                    { name: 'Cow', parts: ['🐮 (Left)', '🐮 (Right)'] },
-                    { name: 'Pig', parts: ['🐷 (Left)', '🐷 (Right)'] }
+                    { 
+                        name: 'Happy Lion', 
+                        image: 'https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&fit=crop&w=600&h=600&q=80',
+                        rows: 2,
+                        cols: 2
+                    },
+                    { 
+                        name: 'Cute Elephant', 
+                        image: 'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?auto=format&fit=crop&w=600&h=600&q=80',
+                        rows: 2,
+                        cols: 2
+                    },
+                    { 
+                        name: 'Playful Monkey', 
+                        image: 'https://images.unsplash.com/photo-1540573133985-87b6da6d54a9?auto=format&fit=crop&w=600&h=600&q=80',
+                        rows: 3,
+                        cols: 2
+                    },
+                    { 
+                        name: 'Friendly Giraffe', 
+                        image: 'https://images.unsplash.com/photo-1547721064-36202633ad1b?auto=format&fit=crop&w=600&h=600&q=80',
+                        rows: 2,
+                        cols: 3
+                    }
                 ]
             }
         },

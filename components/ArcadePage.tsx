@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ARCADE_GAMES } from '../constants';
-import { GameItem } from '../types';
+import { GameItem } from '../types/types';
 import { ArrowLeft, Play, Search } from 'lucide-react';
 import GamePlayer from './GamePlayer';
 

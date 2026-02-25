@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { User, PlacedItem } from '../types';
+import { User, PlacedItem } from '../types/types';
 import { STORE_ITEMS } from '../constants';
 import { ArrowLeft, Home, ShoppingBag, ChevronRight, Lock, Plus, Trash2, Move } from 'lucide-react';
 import { playSound } from '../utils/sound';
