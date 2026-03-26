@@ -1,60 +1,93 @@
 
 import React, { useState } from 'react';
 import { User } from '../types/types';
-import { Star, Coins, Trophy, BookOpen, Gamepad2, Palette, Brain, Rocket, User as UserIcon, ShoppingBag, Home, ArrowRight, Calendar as CalendarIcon, CheckSquare, Check, Sparkles } from 'lucide-react';
-import { CORE_SUBJECTS, EARLY_CHILDHOOD, EARLY_CHILDHOOD_CATEGORIES } from '../constants';
+import { Star, Coins, Trophy, BookOpen, Gamepad2, Palette, Brain, Rocket, User as UserIcon, ShoppingBag, Home, ArrowRight, Calendar as CalendarIcon, CheckSquare, Check, Sparkles, FileText, Maximize2, X, Trash2, CheckCircle, Circle, AlertTriangle } from 'lucide-react';
+import { CORE_SUBJECTS, EARLY_CHILDHOOD, EARLY_CHILDHOOD_CATEGORIES, GRADES } from '../constants';
 import EarlyChildhoodCard from './EarlyChildhoodCard';
+import { getUSHolidays } from '../utils/holidays';
 
 interface DashboardProps {
   user: User;
-  onSubjectClick: (id: string) => void;
+  assignments?: any[];
+  onGradeClick: (id: string) => void;
   onArcadeClick: () => void;
   onProfileClick: () => void;
   onStoreClick: () => void;
   onTreehouseClick: () => void;
   onParentTeacherClick: () => void;
   onEarlyChildhoodClick: () => void;
-  onSpaceJumpClick: () => void;
-  onStellarPopClick: () => void;
-  onBrainGymClick: () => void;
+  onActivitiesClick: () => void;
+  onOpenCalendarClick?: () => void;
+  onUpdateAssignment?: (id: string, updates: any) => void;
+  onDeleteAssignment?: (id: string) => void;
+  showWorkloadWarnings: boolean;
 }
+
+const getSubjectColors = (subject: string) => {
+    switch (subject) {
+        case 'Math': return { bg: 'bg-red-50', border: 'border-red-100', iconBg: 'bg-red-500', text: 'text-red-600' };
+        case 'Reading': return { bg: 'bg-blue-50', border: 'border-blue-100', iconBg: 'bg-blue-500', text: 'text-blue-600' };
+        case 'Science': return { bg: 'bg-green-50', border: 'border-green-100', iconBg: 'bg-green-500', text: 'text-green-600' };
+        case 'Social Studies': return { bg: 'bg-purple-50', border: 'border-purple-100', iconBg: 'bg-purple-500', text: 'text-purple-600' };
+        default: return { bg: 'bg-orange-50', border: 'border-orange-100', iconBg: 'bg-orange-500', text: 'text-orange-600' };
+    }
+};
 
 const Dashboard: React.FC<DashboardProps> = ({ 
     user, 
-    onSubjectClick, 
+    assignments = [],
+    onGradeClick, 
     onArcadeClick, 
     onProfileClick, 
     onStoreClick,
     onTreehouseClick,
     onParentTeacherClick,
     onEarlyChildhoodClick,
-    onSpaceJumpClick,
-    onStellarPopClick,
-    onBrainGymClick
+    onActivitiesClick,
+    onOpenCalendarClick,
+    onUpdateAssignment,
+    onDeleteAssignment,
+    showWorkloadWarnings
 }) => {
   // --- Calendar Logic ---
   const today = new Date();
   const currentDay = today.getDate();
   const monthName = today.toLocaleString('default', { month: 'long' });
   const year = today.getFullYear();
+  const usHolidays = getUSHolidays(year);
   
   // Mock days for current month view (simplified grid)
   const daysInMonth = new Date(year, today.getMonth() + 1, 0).getDate();
   const startDay = new Date(year, today.getMonth(), 1).getDay();
 
-  // --- To-Do List Logic ---
-  const [tasks, setTasks] = useState([
-      { id: 1, text: "Complete 1 Math Lesson", completed: false, xp: 50, color: "bg-red-100 text-red-600" },
-      { id: 2, text: "Play 'Rocket Defense'", completed: false, xp: 30, color: "bg-green-100 text-green-600" },
-      { id: 3, text: "Read for 15 minutes", completed: true, xp: 40, color: "bg-blue-100 text-blue-600" },
-  ]);
-
-  const toggleTask = (id: number) => {
-      setTasks(tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
-  };
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   // Only find parent-teacher item to display at bottom
   const parentTeacherItem = EARLY_CHILDHOOD_CATEGORIES.find(item => item.id === 'parent-teacher');
+
+  // Filter assignments for the current week (Sunday to Saturday)
+  const currentWeekAssignments = assignments.filter(a => {
+    const assignmentDate = new Date(a.date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay()); // Sunday
+    
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 7); // Next Sunday (so < endOfWeek includes Saturday)
+    
+    return assignmentDate >= startOfWeek && assignmentDate < endOfWeek;
+  });
+
+  const selectedDateAssignments = selectedDate 
+    ? assignments.filter(a => a.date === selectedDate)
+    : currentWeekAssignments;
+
+  const displayAssignments = selectedDate ? selectedDateAssignments : currentWeekAssignments;
+  const displayTitle = selectedDate 
+    ? `Missions for ${new Date(selectedDate + 'T12:00:00').toLocaleDateString('default', { month: 'short', day: 'numeric' })}` 
+    : 'Weekly Missions';
 
   return (
     <div className="space-y-12">
@@ -63,10 +96,13 @@ const Dashboard: React.FC<DashboardProps> = ({
         
         {/* User Info */}
         <div className="flex items-center gap-4 shrink-0">
-          <img src={user.avatar} alt="Avatar" className="w-16 h-16 rounded-full border-4 border-yellow-300 shadow-sm" />
+          <img src={user.avatar} alt="Avatar" className="w-24 h-24 rounded-full border-4 border-yellow-300 shadow-sm" />
           <div>
             <h2 className="text-xl font-bold text-slate-800 whitespace-nowrap">Hi, {user.name}!</h2>
-            <p className="text-slate-500 font-bold text-sm hidden sm:block">Ready to learn today?</p>
+            <div className="flex items-center gap-2 mt-0.5">
+              <span className="bg-green-100 text-green-700 text-xs font-black px-2 py-0.5 rounded-full">{user.grade}</span>
+              <p className="text-slate-500 font-bold text-sm hidden sm:block">Ready to learn today?</p>
+            </div>
           </div>
         </div>
         
@@ -139,7 +175,15 @@ const Dashboard: React.FC<DashboardProps> = ({
                       </div>
                       Calendar
                   </h3>
-                  <span className="text-slate-400 font-bold text-sm bg-stone-100 px-3 py-1 rounded-full">{monthName} {year}</span>
+                  <div className="flex items-center gap-2">
+                      <span className="text-slate-400 font-bold text-sm bg-stone-100 px-3 py-1 rounded-full">{monthName} {year}</span>
+                      <button 
+                          onClick={onOpenCalendarClick}
+                          className="flex items-center gap-1 text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-full text-sm font-bold transition-colors"
+                      >
+                          <Maximize2 size={14} /> Open
+                      </button>
+                  </div>
               </div>
               
               <div className="flex-1">
@@ -155,17 +199,41 @@ const Dashboard: React.FC<DashboardProps> = ({
                       {Array.from({ length: daysInMonth }).map((_, i) => {
                           const day = i + 1;
                           const isToday = day === currentDay;
+                          const dateStr = `${year}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                          const dayAssignments = assignments.filter(a => a.date === dateStr);
+                          const hasAssignment = dayAssignments.length > 0;
+                          const isOverloaded = dayAssignments.length > 3;
+                          const allCompleted = hasAssignment && dayAssignments.every(a => a.status === 'completed');
+                          const holiday = usHolidays.find(h => h.date === dateStr);
+
                           return (
-                              <div 
+                              <button 
                                   key={day} 
-                                  className={`aspect-square flex items-center justify-center rounded-lg text-sm font-bold transition-colors cursor-default ${
+                                  onClick={() => setSelectedDate(dateStr)}
+                                  title={holiday ? holiday.name : ''}
+                                  className={`aspect-square flex flex-col items-center justify-center rounded-lg text-sm font-bold transition-colors cursor-pointer relative ${
                                       isToday 
-                                      ? 'bg-blue-500 text-white shadow-md scale-110' 
-                                      : 'text-slate-600 hover:bg-stone-50'
+                                      ? 'bg-blue-500 text-white shadow-md scale-110 z-10' 
+                                      : holiday
+                                      ? 'bg-amber-50 text-amber-600 hover:bg-amber-100'
+                                      : 'text-slate-600 hover:bg-stone-100'
                                   }`}
                               >
                                   {day}
-                              </div>
+                                  {holiday && <Star size={8} className="absolute top-1 left-1 text-amber-400 fill-amber-400" />}
+                                  {showWorkloadWarnings && isOverloaded && <AlertTriangle size={12} className="absolute top-1 right-1 text-red-500" />}
+                                  {hasAssignment && (
+                                      <div className="absolute bottom-1 flex gap-0.5">
+                                          {allCompleted ? (
+                                              <Check size={12} className={isToday ? 'text-white' : 'text-green-500'} />
+                                          ) : (
+                                              Array.from(new Set(dayAssignments.map(a => a.subject))).slice(0, 3).map(subject => (
+                                                  <div key={subject as string} className={`w-1.5 h-1.5 rounded-full ${isToday ? 'bg-white' : getSubjectColors(subject as string).iconBg}`}></div>
+                                              ))
+                                          )}
+                                      </div>
+                                  )}
+                              </button>
                           );
                       })}
                   </div>
@@ -179,177 +247,192 @@ const Dashboard: React.FC<DashboardProps> = ({
                       <div className="bg-green-100 p-2 rounded-xl text-green-600">
                         <CheckSquare size={20} /> 
                       </div>
-                      Daily Missions
+                      {displayTitle}
+                      {selectedDate && (
+                          <button 
+                              onClick={() => setSelectedDate(null)}
+                              className="text-xs text-slate-400 hover:text-slate-600 ml-2 underline"
+                          >
+                              (Show Week)
+                          </button>
+                      )}
                   </h3>
                   <div className="text-xs font-bold text-green-600 bg-green-50 px-3 py-1 rounded-full">
-                      {tasks.filter(t => t.completed).length}/{tasks.length} Complete
+                      {displayAssignments.filter(a => a.status === 'completed').length}/{displayAssignments.length} Complete
                   </div>
               </div>
 
               <div className="space-y-3 flex-1">
-                  {tasks.map(task => (
-                      <button 
-                          key={task.id} 
-                          onClick={() => toggleTask(task.id)}
-                          className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 transition-all group text-left ${
-                              task.completed 
-                              ? 'bg-stone-50 border-stone-100 opacity-60' 
-                              : 'bg-white border-stone-100 hover:border-blue-200 hover:bg-blue-50/30 hover:shadow-sm'
-                          }`}
-                      >
-                          <div className={`w-8 h-8 rounded-xl border-2 flex items-center justify-center transition-colors shrink-0 ${
-                              task.completed 
-                              ? 'bg-green-500 border-green-500 text-white' 
-                              : 'border-stone-300 bg-white group-hover:border-blue-300'
-                          }`}>
-                              {task.completed && <Check size={18} strokeWidth={4} />}
+                  {/* Assigned Homework */}
+                  {displayAssignments.length > 0 ? (
+                      <div className="mb-4">
+                          <div className="space-y-2">
+                              {displayAssignments.map(assignment => {
+                                  const colors = getSubjectColors(assignment.subject);
+                                  const isCompleted = assignment.status === 'completed';
+                                  return (
+                                  <div key={assignment.id} className={`flex items-center gap-3 p-3 ${colors.bg} border-2 ${colors.border} rounded-xl ${isCompleted ? 'opacity-60' : ''}`}>
+                                      <button 
+                                          onClick={() => onUpdateAssignment?.(assignment.id, { status: isCompleted ? 'pending' : 'completed' })}
+                                          className={`${colors.text} hover:scale-110 transition-transform`}
+                                      >
+                                          {isCompleted ? <CheckCircle size={20} /> : <Circle size={20} />}
+                                      </button>
+                                      <div className={`flex-1 ${isCompleted ? 'line-through' : ''}`}>
+                                          <div className="text-sm font-bold text-slate-800">{assignment.title}</div>
+                                          <div className={`text-[10px] font-bold ${colors.text} uppercase tracking-wider`}>Due: {assignment.date}</div>
+                                      </div>
+                                      <button 
+                                          onClick={() => onDeleteAssignment?.(assignment.id)}
+                                          className="text-slate-400 hover:text-red-500 transition-colors p-1"
+                                      >
+                                          <Trash2 size={16} />
+                                      </button>
+                                  </div>
+                              )})}
                           </div>
-                          
-                          <div className="flex-1">
-                              <span className={`font-bold text-lg block ${task.completed ? 'text-slate-400 line-through' : 'text-slate-700'}`}>
-                                  {task.text}
-                              </span>
-                          </div>
-
-                          <div className={`text-xs font-black px-3 py-1.5 rounded-full ${task.color.replace('text-', 'bg-').replace('100', '500').replace('600', 'white')}`}>
-                              +{task.xp} XP
-                          </div>
-                      </button>
-                  ))}
+                      </div>
+                  ) : (
+                      <div className="text-center text-slate-400 font-bold py-8">
+                          {selectedDate ? 'No missions assigned for this date!' : 'No missions assigned for this week!'}
+                      </div>
+                  )}
               </div>
           </div>
       </div>
 
-       {/* All Subjects Quick Links */}
+       {/* All Grades Quick Links */}
        <div className="pt-4"> {/* Added padding top to separate from calendar */}
         <h3 className="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-          <BookOpen className="text-orange-500" /> Explore Subjects
+          <BookOpen className="text-orange-500" /> Explore Grades
         </h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {CORE_SUBJECTS.map((subject) => (
-                <div key={subject.id} className="h-full">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+            {GRADES.map((grade) => (
+                <div key={grade.id} className="h-full">
                     <button 
-                      onClick={() => onSubjectClick(subject.id)}
+                      onClick={() => onGradeClick(grade.id)}
                       className={`w-full h-full p-6 rounded-3xl bg-white shadow-md hover:shadow-xl transition-all flex flex-col items-center gap-4 border-b-8 border-stone-100 active:border-stone-50 active:translate-y-2 group`}
                     >
-                        <div className={`p-5 rounded-full bg-gradient-to-br ${subject.gradient} text-white group-hover:scale-110 transition-transform`}>
-                            <subject.mascot size={32} />
+                        <div className={`p-5 rounded-full ${grade.color} text-white group-hover:scale-110 transition-transform`}>
+                            <grade.icon size={32} />
                         </div>
-                        <span className="text-xl font-black text-slate-700">{subject.title}</span>
+                        <span className="text-xl font-black text-slate-700">{grade.title}</span>
                     </button>
                 </div>
             ))}
         </div>
       </div>
 
-      {/* Activities Section */}
-      <div>
-        <h3 className="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-            <span className="text-3xl">🎮</span> Activities
-        </h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-             {/* Card 1: Arcade Games */}
-             <button 
-                onClick={onArcadeClick}
-                className="w-full h-full min-h-[260px] p-6 rounded-3xl bg-white shadow-lg hover:shadow-xl transition-all flex flex-col justify-between items-start border-b-8 border-stone-100 active:border-stone-50 active:translate-y-2 group hover:bg-purple-50"
-             >
-                <div className="p-4 rounded-2xl bg-purple-100 text-purple-600 group-hover:scale-110 transition-transform">
-                    <Gamepad2 size={40} />
+      {/* Activities, Early Childhood & Parent/Teacher Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+        
+        {/* Activities Section */}
+        <div className="flex flex-col h-full">
+            <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="text-3xl">🎮</span> Activities
+            </h3>
+            <button 
+                onClick={onActivitiesClick}
+                className="flex-1 w-full bg-white p-6 rounded-[2rem] shadow-lg hover:shadow-2xl transition-all flex flex-col justify-between items-start border-b-8 border-stone-100 active:border-stone-50 active:translate-y-2 group hover:bg-purple-50 min-h-[170px]"
+            >
+                <div className="p-4 rounded-2xl bg-purple-100 text-purple-600 group-hover:scale-110 transition-transform shadow-inner">
+                    <Gamepad2 size={36} />
                 </div>
-                <div className="text-left w-full">
-                    <span className="text-2xl font-black text-slate-700 block mb-2">Arcade Games</span>
-                    <div className="flex items-center gap-2 text-purple-500 font-bold text-sm bg-white/50 px-3 py-1 rounded-full w-fit">
-                        Play <ArrowRight size={16} />
+                <div className="text-left w-full mt-3">
+                    <h4 className="text-2xl font-black text-slate-700 mb-1">Activities</h4>
+                    <p className="text-slate-500 font-bold mb-3 text-sm">Games, Puzzles & More!</p>
+                    <div className="flex items-center gap-2 text-purple-500 font-bold text-sm bg-white/50 px-3 py-1.5 rounded-full w-fit">
+                        Explore All <ArrowRight size={16} />
                     </div>
                 </div>
-             </button>
-
-             {/* Card 2: Rocket Defense (Previously Space Jump) */}
-             <button 
-                onClick={onSpaceJumpClick}
-                className="w-full h-full min-h-[260px] p-6 rounded-3xl bg-white shadow-lg hover:shadow-xl transition-all flex flex-col justify-between items-start border-b-8 border-stone-100 active:border-stone-50 active:translate-y-2 group hover:bg-green-50"
-             >
-                <div className="p-4 rounded-2xl bg-green-100 text-green-600 group-hover:scale-110 transition-transform">
-                    <Rocket size={40} />
-                </div>
-                <div className="text-left w-full">
-                    <span className="text-2xl font-black text-slate-700 block mb-2">Rocket Defense</span>
-                    <div className="flex items-center gap-2 text-green-500 font-bold text-sm bg-white/50 px-3 py-1 rounded-full w-fit">
-                        Launch <ArrowRight size={16} />
-                    </div>
-                </div>
-             </button>
-
-             {/* Card 3: Stellar Pop (Replaces Creative Corner) */}
-             <button 
-                onClick={onStellarPopClick}
-                className="w-full h-full min-h-[260px] p-6 rounded-3xl bg-white shadow-lg hover:shadow-xl transition-all flex flex-col justify-between items-start border-b-8 border-stone-100 active:border-stone-50 active:translate-y-2 group hover:bg-indigo-50"
-             >
-                <div className="p-4 rounded-2xl bg-indigo-100 text-indigo-600 group-hover:scale-110 transition-transform">
-                    <Sparkles size={40} />
-                </div>
-                <div className="text-left w-full">
-                    <span className="text-2xl font-black text-slate-700 block mb-2">Stellar Pop</span>
-                    <div className="flex items-center gap-2 text-indigo-500 font-bold text-sm bg-white/50 px-3 py-1 rounded-full w-fit">
-                        Pop <ArrowRight size={16} />
-                    </div>
-                </div>
-             </button>
-
-             {/* Card 4: Word Stack */}
-             <button 
-                onClick={onBrainGymClick}
-                className="w-full h-full min-h-[260px] p-6 rounded-3xl bg-white shadow-lg hover:shadow-xl transition-all flex flex-col justify-between items-start border-b-8 border-stone-100 active:border-stone-50 active:translate-y-2 group hover:bg-blue-50"
-             >
-                <div className="p-4 rounded-2xl bg-blue-100 text-blue-600 group-hover:scale-110 transition-transform">
-                    <Brain size={40} />
-                </div>
-                <div className="text-left w-full">
-                    <span className="text-2xl font-black text-slate-700 block mb-2">Word Stack</span>
-                    <div className="flex items-center gap-2 text-blue-500 font-bold text-sm bg-white/50 px-3 py-1 rounded-full w-fit">
-                        Train <ArrowRight size={16} />
-                    </div>
-                </div>
-             </button>
+            </button>
         </div>
-      </div>
 
-      {/* Early Childhood & Parent/Teacher Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-         {/* Early Childhood Section (Takes 1 col, stretched to match) */}
-         <div className="flex flex-col h-full">
-             <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+        {/* Early Childhood Section */}
+        <div className="flex flex-col h-full">
+            <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
                 <span className="text-3xl">🧸</span> Early Childhood
-             </h3>
-             <div className="flex-1">
+            </h3>
+            <div className="flex-1">
                 <EarlyChildhoodCard 
                     {...EARLY_CHILDHOOD} 
                     onClick={onEarlyChildhoodClick} 
                 />
-             </div>
-         </div>
+            </div>
+        </div>
 
-         {/* Parent/Teacher Corner Section (Takes 1 col) */}
-         {parentTeacherItem && (
+        {/* Parent/Teacher Corner Section */}
+        {parentTeacherItem && (
             <div className="flex flex-col h-full">
                 <h3 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
                     <span className="text-3xl">🍎</span> {parentTeacherItem.title}
                 </h3>
                 <button 
                     onClick={onParentTeacherClick}
-                    className="flex-1 w-full bg-white p-8 rounded-[2rem] shadow-xl border-b-8 border-stone-100 hover:border-slate-200 hover:-translate-y-1 transition-all cursor-pointer flex flex-col items-center justify-center gap-6 group text-center min-h-[260px]"
+                    className="flex-1 w-full bg-white p-6 rounded-[2rem] shadow-xl border-b-8 border-stone-100 hover:border-slate-200 hover:-translate-y-1 transition-all cursor-pointer flex flex-col items-center justify-center gap-4 group text-center min-h-[170px]"
                 >
-                     <div className={`p-8 rounded-[2rem] ${parentTeacherItem.colorClass} group-hover:scale-110 transition-transform shrink-0 shadow-inner`}>
-                        <parentTeacherItem.icon size={64} />
+                     <div className={`p-5 rounded-[1.5rem] ${parentTeacherItem.colorClass} group-hover:scale-110 transition-transform shrink-0 shadow-inner`}>
+                        <parentTeacherItem.icon size={40} />
                     </div>
                     <div>
-                        <h4 className="text-3xl font-black text-slate-700 mb-3">{parentTeacherItem.title}</h4>
-                        <p className="text-slate-500 font-bold leading-relaxed text-lg max-w-xs mx-auto">{parentTeacherItem.description}</p>
+                        <h4 className="text-2xl font-black text-slate-700 mb-2">{parentTeacherItem.title}</h4>
+                        <p className="text-slate-500 font-bold leading-relaxed text-sm max-w-xs mx-auto">{parentTeacherItem.description}</p>
                     </div>
                 </button>
             </div>
-         )}
+        )}
       </div>
+
+      {/* Day Details Modal */}
+      {selectedDate && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
+              <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden relative">
+                  <div className="p-6 bg-blue-600 text-white flex justify-between items-center">
+                      <h3 className="text-xl font-bold flex items-center gap-2">
+                          <CalendarIcon size={20} />
+                          {new Date(selectedDate + 'T12:00:00').toLocaleDateString('default', { weekday: 'short', month: 'short', day: 'numeric' })}
+                      </h3>
+                      <button onClick={() => setSelectedDate(null)} className="hover:bg-white/20 p-2 rounded-full transition-colors">
+                          <X size={20} />
+                      </button>
+                  </div>
+                  <div className="p-6 max-h-[60vh] overflow-y-auto">
+                      {assignments.filter(a => a.date === selectedDate).length > 0 ? (
+                          <div className="space-y-3">
+                              {assignments.filter(a => a.date === selectedDate).map(assignment => {
+                                  const colors = getSubjectColors(assignment.subject);
+                                  const isCompleted = assignment.status === 'completed';
+                                  return (
+                                  <div key={assignment.id} className={`flex items-center gap-3 p-3 ${colors.bg} border-2 ${colors.border} rounded-xl ${isCompleted ? 'opacity-60' : ''}`}>
+                                      <button 
+                                          onClick={() => onUpdateAssignment?.(assignment.id, { status: isCompleted ? 'pending' : 'completed' })}
+                                          className={`${colors.text} hover:scale-110 transition-transform`}
+                                      >
+                                          {isCompleted ? <CheckCircle size={20} /> : <Circle size={20} />}
+                                      </button>
+                                      <div className={`flex-1 ${isCompleted ? 'line-through' : ''}`}>
+                                          <div className="text-sm font-bold text-slate-800">{assignment.title}</div>
+                                          <div className={`text-[10px] font-bold ${colors.text} uppercase tracking-wider`}>{assignment.subject}</div>
+                                      </div>
+                                      <button 
+                                          onClick={() => onDeleteAssignment?.(assignment.id)}
+                                          className="text-slate-400 hover:text-red-500 transition-colors p-1"
+                                      >
+                                          <Trash2 size={16} />
+                                      </button>
+                                  </div>
+                              )})}
+                          </div>
+                      ) : (
+                          <div className="text-center py-8 text-slate-500 font-bold">
+                              <div className="text-4xl mb-3">🎉</div>
+                              No homework assigned for this day!
+                          </div>
+                      )}
+                  </div>
+              </div>
+          </div>
+      )}
 
     </div>
   );

@@ -69,7 +69,7 @@ export const getSSWorksheets = (grade: string, lessonId: number, lessonTitle: st
         else if (lowerTitle.includes("history") || lowerTitle.includes("past") || lowerTitle.includes("time")) pool = historyQs;
         else if (lowerTitle.includes("civic") || lowerTitle.includes("government") || lowerTitle.includes("flag") || lowerTitle.includes("symbol")) pool = civicsQs;
 
-        for (let q = 1; q <= 10; q++) {
+        for (let q = 1; q <= 20; q++) {
             const template = pool[(q - 1) % pool.length];
             questions.push({
                 id: `ws-${lessonId}-${i}-q${q}`,
@@ -81,7 +81,7 @@ export const getSSWorksheets = (grade: string, lessonId: number, lessonTitle: st
 
         worksheets.push({
             id: `ss-${lessonId}-${i}`,
-            title: `Worksheet ${i}: ${difficulty} Activity`,
+            title: `${lessonTitle}: ${difficulty} Practice Set ${i}`,
             difficulty: difficulty,
             questions: questions
         });

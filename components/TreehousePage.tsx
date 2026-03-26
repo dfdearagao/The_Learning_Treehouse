@@ -85,6 +85,27 @@ const TreehousePage: React.FC<TreehousePageProps> = ({ user, onBack, onUpdateRoo
   const [draggingItemId, setDraggingItemId] = useState<string | null>(null);
   const roomRef = useRef<HTMLDivElement>(null);
 
+  // Dynamic Environment State
+  const [timeOfDay, setTimeOfDay] = useState<'day' | 'sunset' | 'night'>('day');
+
+  useEffect(() => {
+      const hour = new Date().getHours();
+      if (hour >= 6 && hour < 17) setTimeOfDay('day');
+      else if (hour >= 17 && hour < 20) setTimeOfDay('sunset');
+      else setTimeOfDay('night');
+  }, []);
+
+  const getSkyGradient = () => {
+      if (timeOfDay === 'day') return 'from-sky-300 to-sky-100';
+      if (timeOfDay === 'sunset') return 'from-orange-400 via-pink-300 to-purple-400';
+      return 'from-indigo-900 via-purple-900 to-slate-900';
+  };
+
+  const dynamicRooms = ROOMS.map(room => ({
+      ...room,
+      isLocked: !user.unlockedRooms?.includes(room.id) && room.id !== 'bedroom' && room.id !== 'lobby'
+  }));
+
   // Get placed items for the currently selected room
   const currentRoomItems = selectedRoomId && user.treehouseState 
     ? (user.treehouseState[selectedRoomId] || []) 
@@ -95,13 +116,38 @@ const TreehousePage: React.FC<TreehousePageProps> = ({ user, onBack, onUpdateRoo
   const userInventory = STORE_ITEMS.filter(item => user.inventory?.includes(item.id));
 
   const handleRoomClick = (room: RoomConfig) => {
-    if (room.isLocked) {
+    const dynamicRoom = dynamicRooms.find(r => r.id === room.id);
+    if (dynamicRoom?.isLocked) {
         playSound('error');
+        alert('This room is locked! You can unlock it in the Store.');
         return;
     }
     playSound('pop');
     setSelectedRoomId(room.id);
     setCurrentView('room');
+  };
+
+  const handleItemClick = (item: PlacedItem, e: React.MouseEvent) => {
+      if (draggingItemId) return;
+      
+      const storeItem = STORE_ITEMS.find(s => s.id === item.itemId);
+      if (!storeItem) return;
+
+      playSound('click');
+      
+      if (storeItem.id === 'tech_telescope') {
+          alert('🔭 Space Fact: One million Earths could fit inside the Sun!');
+      } else if (storeItem.id === 'tech_music') {
+          alert('📻 Playing some lo-fi study beats...');
+      } else if (storeItem.category === 'Pet') {
+          alert(`${storeItem.icon} Your pet looks happy!`);
+      } else if (storeItem.id === 'furn_shelf') {
+          alert('📚 Opening your Reading Log...');
+      } else {
+          const target = e.currentTarget as HTMLElement;
+          target.classList.add('animate-bounce');
+          setTimeout(() => target.classList.remove('animate-bounce'), 1000);
+      }
   };
 
   const handleAddItem = (itemId: string) => {
@@ -168,7 +214,7 @@ const TreehousePage: React.FC<TreehousePageProps> = ({ user, onBack, onUpdateRoo
         
         {/* --- 1. WORLD VIEW (TREE STRUCTURE) --- */}
         {currentView === 'world' && (
-            <div className="relative w-full h-full bg-gradient-to-b from-sky-300 to-green-100 overflow-hidden">
+            <div className={`relative w-full h-full bg-gradient-to-b ${getSkyGradient()} overflow-hidden transition-colors duration-1000`}>
                 
                 {/* HUD Header */}
                 <div className="absolute top-0 left-0 w-full p-4 md:p-6 flex justify-between items-start z-30 pointer-events-none">
@@ -222,7 +268,7 @@ const TreehousePage: React.FC<TreehousePageProps> = ({ user, onBack, onUpdateRoo
                 </div>
 
                 {/* ROOM NODES (Interactive) */}
-                {ROOMS.map((room) => (
+                {dynamicRooms.map((room) => (
                     <button
                         key={room.id}
                         onClick={() => handleRoomClick(room)}
@@ -314,6 +360,7 @@ const TreehousePage: React.FC<TreehousePageProps> = ({ user, onBack, onUpdateRoo
                                     style={{ left: `${item.x}%`, top: `${item.y}%`, zIndex: Math.floor(item.y) }}
                                     onMouseDown={() => handleDragStart(item.uid)}
                                     onTouchStart={() => handleDragStart(item.uid)}
+                                    onClick={(e) => handleItemClick(item, e)}
                                 >
                                     <div className="text-[5rem] md:text-[8rem] filter drop-shadow-xl select-none pointer-events-none">
                                         {storeItem.icon}

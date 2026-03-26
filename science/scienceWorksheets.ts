@@ -85,7 +85,7 @@ export const getScienceWorksheets = (grade: string, lessonId: number, lessonTitl
         else if (lowerTitle.includes("space") || lowerTitle.includes("planet") || lowerTitle.includes("earth")) pool = spaceQs;
         else if (lowerTitle.includes("animal") || lowerTitle.includes("living")) pool = animalQs;
 
-        for (let q = 1; q <= 10; q++) {
+        for (let q = 1; q <= 20; q++) {
             const template = pool[(q - 1) % pool.length];
             questions.push({
                 id: `ws-${lessonId}-${i}-q${q}`,
@@ -97,7 +97,7 @@ export const getScienceWorksheets = (grade: string, lessonId: number, lessonTitl
 
         worksheets.push({
             id: `sci-${lessonId}-${i}`,
-            title: `Worksheet ${i}: ${difficulty} Lab`,
+            title: `${lessonTitle}: ${difficulty} Practice Set ${i}`,
             difficulty: difficulty,
             questions: questions
         });

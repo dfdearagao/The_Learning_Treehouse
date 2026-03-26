@@ -19,16 +19,21 @@ import {
   ChevronRight,
   Plus,
   Target,
-  BookOpenCheck
+  BookOpenCheck,
+  BookOpen
 } from 'lucide-react';
 
 interface ParentTeacherPageProps {
   user: User;
   onBack: () => void;
   onLessonSummariesClick?: () => void;
+  onLearningGuideClick?: () => void;
+  onAssignHomeworkClick?: () => void;
+  showWorkloadWarnings: boolean;
+  onToggleWorkloadWarnings: () => void;
 }
 
-const LessonPlanModal = ({ onClose }: { onClose: () => void }) => {
+const LessonPlanModal = ({ onClose, onAssignHomeworkClick }: { onClose: () => void; onAssignHomeworkClick?: () => void }) => {
     const [selectedGrade, setSelectedGrade] = useState('2nd Grade');
     const [selectedSubject, setSelectedSubject] = useState('Math');
 
@@ -128,7 +133,13 @@ const LessonPlanModal = ({ onClose }: { onClose: () => void }) => {
                     <button className="flex-1 py-3 bg-white border-2 border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
                         <Download size={18} /> Export PDF
                     </button>
-                    <button className="flex-1 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-[0_4px_0_#1e40af] hover:translate-y-1 hover:shadow-none transition-all flex items-center justify-center gap-2">
+                    <button 
+                        onClick={() => {
+                            onClose();
+                            onAssignHomeworkClick?.();
+                        }}
+                        className="flex-1 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-[0_4px_0_#1e40af] hover:translate-y-1 hover:shadow-none transition-all flex items-center justify-center gap-2"
+                    >
                         <Plus size={18} /> Assign to Class
                     </button>
                 </div>
@@ -137,7 +148,15 @@ const LessonPlanModal = ({ onClose }: { onClose: () => void }) => {
     );
 };
 
-const ParentTeacherPage: React.FC<ParentTeacherPageProps> = ({ user, onBack, onLessonSummariesClick }) => {
+const ParentTeacherPage: React.FC<ParentTeacherPageProps> = ({ 
+  user, 
+  onBack, 
+  onLessonSummariesClick, 
+  onLearningGuideClick, 
+  onAssignHomeworkClick,
+  showWorkloadWarnings,
+  onToggleWorkloadWarnings
+}) => {
   const [showLessonPlan, setShowLessonPlan] = useState(false);
 
   // Mock Data
@@ -277,7 +296,10 @@ const ParentTeacherPage: React.FC<ParentTeacherPageProps> = ({ user, onBack, onL
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
                 <h3 className="text-xl font-bold mb-4 relative z-10">Classroom Tools</h3>
                 <div className="space-y-3 relative z-10">
-                    <button className="w-full py-4 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl font-bold text-left px-4 flex items-center justify-between group transition-all">
+                    <button 
+                        onClick={onAssignHomeworkClick}
+                        className="w-full py-4 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl font-bold text-left px-4 flex items-center justify-between group transition-all"
+                    >
                         <div className="flex items-center gap-3">
                             <FileText size={20} /> Assign Homework
                         </div>
@@ -301,6 +323,15 @@ const ParentTeacherPage: React.FC<ParentTeacherPageProps> = ({ user, onBack, onL
                     >
                         <div className="flex items-center gap-3">
                             <BookOpenCheck size={20} /> Lesson Summaries
+                        </div>
+                        <ChevronRight size={16} className="opacity-50 group-hover:translate-x-1 transition-transform" />
+                    </button>
+                    <button 
+                        onClick={onLearningGuideClick}
+                        className="w-full py-4 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl font-bold text-left px-4 flex items-center justify-between group transition-all"
+                    >
+                        <div className="flex items-center gap-3">
+                            <BookOpen size={20} /> Learning Expedition Guide
                         </div>
                         <ChevronRight size={16} className="opacity-50 group-hover:translate-x-1 transition-transform" />
                     </button>
@@ -364,6 +395,15 @@ const ParentTeacherPage: React.FC<ParentTeacherPageProps> = ({ user, onBack, onL
                             <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm"></div>
                         </div>
                     </div>
+                    <div className="flex items-center justify-between">
+                        <span className="font-bold text-slate-600">Workload Warnings</span>
+                        <div 
+                            onClick={onToggleWorkloadWarnings}
+                            className={`w-12 h-6 rounded-full relative cursor-pointer transition-colors ${showWorkloadWarnings ? 'bg-green-500' : 'bg-stone-300'}`}
+                        >
+                            <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${showWorkloadWarnings ? 'right-1' : 'left-1'}`}></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -371,7 +411,10 @@ const ParentTeacherPage: React.FC<ParentTeacherPageProps> = ({ user, onBack, onL
       </div>
 
       {showLessonPlan && (
-          <LessonPlanModal onClose={() => setShowLessonPlan(false)} />
+          <LessonPlanModal 
+            onClose={() => setShowLessonPlan(false)} 
+            onAssignHomeworkClick={onAssignHomeworkClick}
+          />
       )}
     </div>
   );

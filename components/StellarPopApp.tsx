@@ -30,7 +30,7 @@ const StellarPopApp: React.FC<StellarPopAppProps> = ({ onBack }) => {
 
     if (gameState === 'home') {
         return (
-            <div className="relative w-full h-full min-h-screen bg-[#121212]">
+            <div className="relative w-full h-screen bg-[#121212] overflow-hidden no-scrollbar">
                 <HomeScreen onStartGame={handleStartGame} highScores={highScores} />
                 
                 {/* Global Exit Button to leave the Stellar Pop App entirely */}
@@ -45,7 +45,7 @@ const StellarPopApp: React.FC<StellarPopAppProps> = ({ onBack }) => {
     }
 
     return (
-        <div className="relative w-full h-full min-h-screen">
+        <div className="relative w-full h-screen overflow-hidden no-scrollbar">
             <GeminiSlingshot 
                 onExit={handleExitGame} 
                 onRecordScore={handleRecordScore} 

@@ -1082,7 +1082,7 @@ const GeminiSlingshot: React.FC<GeminiSlingshotProps> = ({ onExit, onRecordScore
 
         {/* HUD: Score & Danger */}
         {/* Scaled down for mobile "zoom out" effect */}
-        <div className="absolute top-4 left-4 z-40 flex flex-col gap-2 pointer-events-none origin-top-left scale-75 md:scale-100">
+        <div className="absolute top-24 left-4 z-40 flex flex-col gap-2 pointer-events-none origin-top-left scale-75 md:scale-100">
             <div className="bg-[#1e1e1e]/80 backdrop-blur p-4 rounded-[24px] border border-[#444746] shadow-xl flex items-center gap-4 min-w-[140px]">
                 <div className="bg-[#42a5f5]/20 p-2 rounded-full">
                     <Trophy className="w-5 h-5 text-[#42a5f5]" />
@@ -1104,20 +1104,38 @@ const GeminiSlingshot: React.FC<GeminiSlingshotProps> = ({ onExit, onRecordScore
             </div>
         </div>
 
-        {/* HUD: Controls Tip */}
-        <div className="absolute top-6 right-6 z-40 pointer-events-none hidden md:block">
-             <div className="bg-[#1e1e1e]/80 backdrop-blur border border-[#444746] p-4 rounded-xl text-xs text-[#c4c7c5] space-y-2">
-                 <div className="flex items-center gap-2">
-                     <Keyboard className="w-4 h-4" />
-                     <span className="font-bold uppercase">Desktop Controls</span>
+        {/* HUD: Controls Tip & Directions */}
+        <div className="absolute top-24 right-6 z-40 pointer-events-none hidden md:block w-64">
+             <div className="bg-[#1e1e1e]/80 backdrop-blur border border-[#444746] p-4 rounded-xl text-xs text-[#c4c7c5] space-y-3">
+                 <div className="flex items-center gap-2 border-b border-[#444746] pb-2">
+                     <Keyboard className="w-4 h-4 text-[#42a5f5]" />
+                     <span className="font-bold uppercase text-white">How to Play</span>
                  </div>
-                 <div className="flex items-center justify-between gap-4">
-                     <span>Aim</span>
-                     <span className="bg-white/10 px-2 py-0.5 rounded text-white font-mono">← / →</span>
+                 
+                 <div className="space-y-2">
+                    <p className="text-[10px] font-bold text-[#42a5f5] uppercase tracking-widest">Controls</p>
+                    <div className="flex items-center justify-between gap-4">
+                        <span>Aim Slingshot</span>
+                        <span className="bg-white/10 px-2 py-0.5 rounded text-white font-mono">← / →</span>
+                    </div>
+                    <div className="flex items-center justify-between gap-4">
+                        <span>Charge & Shoot</span>
+                        <span className="bg-white/10 px-2 py-0.5 rounded text-white font-mono">Hold SPACE</span>
+                    </div>
                  </div>
-                 <div className="flex items-center justify-between gap-4">
-                     <span>Shoot</span>
-                     <span className="bg-white/10 px-2 py-0.5 rounded text-white font-mono">Hold SPACE</span>
+
+                 <div className="space-y-2 pt-1">
+                    <p className="text-[10px] font-bold text-yellow-500 uppercase tracking-widest">Objective</p>
+                    <p className="leading-relaxed opacity-80">
+                        Match 3+ bubbles of the same color to pop them. Clear the board before they reach the bottom!
+                    </p>
+                 </div>
+
+                 <div className="space-y-2 pt-1">
+                    <p className="text-[10px] font-bold text-purple-400 uppercase tracking-widest">Bonuses</p>
+                    <p className="leading-relaxed opacity-80">
+                        Match numbers for a <span className="text-green-400 font-bold">Math Bonus</span> or letters for a <span className="text-orange-400 font-bold">Literacy Bonus</span>!
+                    </p>
                  </div>
              </div>
         </div>

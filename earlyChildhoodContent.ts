@@ -507,9 +507,9 @@ export const EC_CONTENT: Record<string, ECActivity[]> = {
             type: 'quiz',
             data: {
                 questions: [
-                    { q: "Red, Blue, Red, ...?", options: ["Blue", "Red", "Green"], correctIndex: 0, image: "🔴🔵🔴❓" },
-                    { q: "Circle, Square, Circle, ...?", options: ["Square", "Circle", "Triangle"], correctIndex: 0, image: "⭕🟥⭕❓" },
-                    { q: "Big, Small, Big, ...?", options: ["Small", "Big", "Huge"], correctIndex: 0, image: "🐘🐁🐘❓" }
+                    { q: "Yellow, Green, Yellow, ...?", options: ["Green", "Yellow", "Red"], correctIndex: 0, image: "🟡🟢🟡❓" },
+                    { q: "Triangle, Star, Triangle, ...?", options: ["Star", "Triangle", "Circle"], correctIndex: 0, image: "🔺⭐🔺❓" },
+                    { q: "Up, Down, Up, ...?", options: ["Down", "Up", "Left"], correctIndex: 0, image: "⬆️⬇️⬆️❓" }
                 ]
             }
         },

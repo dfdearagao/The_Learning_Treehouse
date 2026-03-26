@@ -331,7 +331,7 @@ const ToddlerGameEngine: React.FC<ToddlerGameEngineProps> = ({ activity, onCompl
                     {bins.map((bin: any) => (
                         <div
                             key={bin.id}
-                            ref={el => binRefs.current[bin.id] = el}
+                            ref={el => { binRefs.current[bin.id] = el; }}
                             className="flex-1 bg-white/50 border-4 border-dashed border-slate-200 rounded-[2.5rem] p-6 flex flex-col items-center justify-center gap-4 min-h-[200px] transition-colors"
                         >
                             <div className="text-5xl">{bin.icon}</div>
@@ -396,7 +396,7 @@ const ToddlerGameEngine: React.FC<ToddlerGameEngineProps> = ({ activity, onCompl
                             return (
                                 <div
                                     key={target.id}
-                                    ref={el => targetRefs.current[target.id] = el}
+                                    ref={el => { targetRefs.current[target.id] = el; }}
                                     className={`h-24 rounded-3xl border-4 border-dashed flex items-center justify-center transition-all ${
                                         isMatched ? 'bg-green-100 border-green-300' : 'bg-white/30 border-slate-200'
                                     }`}
@@ -566,7 +566,7 @@ const ToddlerGameEngine: React.FC<ToddlerGameEngineProps> = ({ activity, onCompl
                             return (
                                 <div
                                     key={i}
-                                    ref={el => slotRefs.current[i] = el}
+                                    ref={el => { slotRefs.current[i] = el; }}
                                     className={`relative z-10 w-full h-full rounded-xl border-2 border-slate-100 flex items-center justify-center transition-all ${
                                         isPlaced ? 'bg-transparent border-transparent' : 'bg-slate-50/30'
                                     }`}

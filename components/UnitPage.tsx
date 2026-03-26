@@ -499,15 +499,14 @@ const UnitPage: React.FC<UnitPageProps> = ({ subject, grade, unitId, onBack, onC
                                     >
                                         <div className="flex items-center gap-4">
                                             <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white font-black shadow-sm ${
-                                                sheet.difficulty === 'Easy' ? 'bg-green-400' : sheet.difficulty === 'Medium' ? 'bg-blue-400' : 'bg-purple-400'
+                                                sheet.difficulty === 'Easy' ? 'bg-green-400' : 
+                                                sheet.difficulty === 'Medium' ? 'bg-blue-400' : 
+                                                'bg-purple-400'
                                             }`}>
                                                 {idx + 1}
                                             </div>
                                             <div>
                                                 <h3 className="font-bold text-slate-800 text-lg">{sheet.title}</h3>
-                                                <span className={`text-xs font-bold uppercase tracking-wider ${
-                                                    sheet.difficulty === 'Easy' ? 'text-green-500' : sheet.difficulty === 'Medium' ? 'text-blue-500' : 'text-purple-500'
-                                                }`}>{sheet.difficulty}</span>
                                             </div>
                                         </div>
                                         <ChevronRight className="text-stone-300 group-hover:text-purple-500 transition-colors" />

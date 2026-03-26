@@ -70,8 +70,8 @@ export const getReadingWorksheets = (grade: string, lessonId: number, lessonTitl
         else if (lowerTitle.includes("grammar") || lowerTitle.includes("noun") || lowerTitle.includes("verb")) pool = grammarQs;
         else if (lowerTitle.includes("sight word") || lowerTitle.includes("foundational")) pool = sightWordQs;
 
-        // Generate 10 questions
-        for (let q = 1; q <= 10; q++) {
+        // Generate 20 questions
+        for (let q = 1; q <= 20; q++) {
             // Cycle through pool or pick random
             const template = pool[(q - 1) % pool.length];
             
@@ -86,7 +86,7 @@ export const getReadingWorksheets = (grade: string, lessonId: number, lessonTitl
 
         worksheets.push({
             id: `reading-${lessonId}-${i}`,
-            title: `Worksheet ${i}: ${difficulty} Activity`,
+            title: `${lessonTitle}: ${difficulty} Practice Set ${i}`,
             difficulty: difficulty,
             questions: questions
         });

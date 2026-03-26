@@ -1,6 +1,13 @@
 
 import { LucideIcon } from 'lucide-react';
 
+export interface UserSettings {
+  homeworkPace: 'None' | 'Light' | 'Balanced' | 'Intensive';
+  dailyTimeGoal: number; // in minutes
+  learningFocus: string[]; // e.g. ["Math", "Reading"]
+  themePreference: 'Standard' | 'Space' | 'Nature';
+}
+
 export interface User {
   name: string;
   avatar: string;
@@ -12,6 +19,11 @@ export interface User {
   treehouseState?: Record<string, PlacedItem[]>; // Updated to store position
   progress?: Record<string, number[]>; // Key: "subject-grade" (e.g. "math-2nd Grade"), Value: [completedLessonIds]
   lessonProgress?: Record<string, string[]>; // Key: "subject-grade-lessonId", Value: ['learn', 'practice']
+  equippedItems?: Record<string, string>; // e.g. { hat: 'acc_hat', glasses: 'acc_glasses' }
+  streaks?: number;
+  badges?: string[];
+  unlockedRooms?: string[];
+  settings?: UserSettings;
 }
 
 export interface PlacedItem {
@@ -72,17 +84,25 @@ export interface StoreItem {
   id: string;
   name: string;
   price: number;
-  category: 'Furniture' | 'Decor' | 'Tech' | 'Pet' | 'Toy' | 'Accessory';
+  category: 'Furniture' | 'Decor' | 'Tech' | 'Pet' | 'Toy' | 'Accessory' | 'Theme' | 'Room' | 'Consumable';
   icon: string; // Emoji or URL
   color: string;
+  requiredLevel?: number;
+  requiredSubject?: string;
+  isConsumable?: boolean;
 }
 
 export interface Lesson {
   id: number;
   title: string;
   duration: string;
-  type: 'practice' | 'quiz' | 'project';
+  type: 'practice' | 'quiz' | 'project' | 'custom';
   objectives?: string[]; // 3 bullet points describing learning outcomes
+  learningStyles?: string[];
+  resources?: { title: string; url: string }[];
+  videoUrl?: string;
+  isCustom?: boolean;
+  vocabulary?: { word: string; definition: string }[];
 }
 
 export interface Unit {

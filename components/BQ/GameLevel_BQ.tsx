@@ -43,6 +43,7 @@ const GameLevel: React.FC<GameLevelProps> = ({ subject, levelIndex, onComplete, 
   const [gameState, setGameState] = useState<'START' | 'PLAYING' | 'PAUSED' | 'COMPLETE'>('START');
   const [currentQIndex, setCurrentQIndex] = useState(0);
   const [score, setScore] = useState(0);
+  const [lives, setLives] = useState(3);
   const [feedback, setFeedback] = useState<{msg: string, type: 'good'|'bad'} | null>(null);
 
   // Refs for Game Loop
@@ -147,8 +148,9 @@ const GameLevel: React.FC<GameLevelProps> = ({ subject, levelIndex, onComplete, 
       
     } else {
       soundManager.playWrong();
+      setLives(l => Math.max(0, l - 1));
       setScore(s => Math.max(0, s - 20));
-      setFeedback({ msg: "Miss!", type: "bad" });
+      setFeedback({ msg: "System Breach!", type: "bad" });
       setTimeout(() => setFeedback(null), 1000);
     }
   };
@@ -172,11 +174,26 @@ const GameLevel: React.FC<GameLevelProps> = ({ subject, levelIndex, onComplete, 
 
     targets.current.forEach(t => {
       t.y += TARGET_SPEED_BASE + (levelIndex * 0.03);
-      if (t.y > 110) {
-        t.y = -20;
-        t.x = Math.random() * 80 + 10;
+      if (t.y > 105) {
+        if (t.isCorrect) {
+          setLives(l => Math.max(0, l - 1));
+          setFeedback({ msg: "Data Lost!", type: "bad" });
+          setTimeout(() => setFeedback(null), 1000);
+          // Respawn targets for the same question
+          targets.current = [];
+          spawnTargets(questions[currentQIndex]);
+        } else {
+          t.y = -20;
+          t.x = Math.random() * 80 + 10;
+        }
       }
     });
+
+    // Check for Game Over (Defeat)
+    if (lives <= 0) {
+      setGameState('COMPLETE');
+      return;
+    }
 
     // 4. Collision Detection
     for (let bIndex = bullets.current.length - 1; bIndex >= 0; bIndex--) {
@@ -293,6 +310,12 @@ const GameLevel: React.FC<GameLevelProps> = ({ subject, levelIndex, onComplete, 
                  <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
                  <span className="font-mono text-cyan-100 font-bold tracking-wider">{score.toString().padStart(5, '0')}</span>
              </div>
+             {/* Lives Display */}
+             <div className="bg-slate-800/40 backdrop-blur-md border border-white/10 px-4 py-2 rounded-full shadow-lg flex items-center gap-2">
+                 {[...Array(3)].map((_, i) => (
+                    <div key={i} className={`w-3 h-3 rounded-full ${i < lives ? 'bg-rose-500 shadow-[0_0_8px_#f43f5e]' : 'bg-slate-700'}`} />
+                 ))}
+             </div>
          </div>
          <div className="flex gap-1">
             {questions.map((_, i) => (
@@ -393,9 +416,29 @@ const GameLevel: React.FC<GameLevelProps> = ({ subject, levelIndex, onComplete, 
             <h1 className="text-4xl md:text-5xl font-black text-white mb-2 tracking-tight">
                 Rocket Defense
             </h1>
-            <p className="text-cyan-200/60 text-lg mb-10 max-w-md">
+            <p className="text-cyan-200/60 text-lg mb-6 max-w-md">
                 Intercept the correct data packets to charge the defense network.
             </p>
+            
+            {/* Controls Description */}
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-10 max-w-sm w-full backdrop-blur-sm">
+                <h3 className="text-cyan-300 font-bold uppercase tracking-widest text-sm mb-4">Mission Controls</h3>
+                <div className="grid grid-cols-2 gap-4 text-left">
+                    <div className="space-y-1">
+                        <p className="text-slate-400 text-[10px] uppercase font-bold">Desktop</p>
+                        <p className="text-white text-sm">Arrows: Move</p>
+                        <p className="text-white text-sm">Space: Fire</p>
+                    </div>
+                    <div className="space-y-1 border-l border-white/10 pl-4">
+                        <p className="text-slate-400 text-[10px] uppercase font-bold">Mobile</p>
+                        <p className="text-white text-sm">Drag: Move</p>
+                        <p className="text-white text-sm">Tap: Fire</p>
+                    </div>
+                </div>
+                <div className="mt-4 pt-4 border-t border-white/10 text-center">
+                    <p className="text-rose-400 text-xs font-bold">Warning: 3 System Failures = Mission Over</p>
+                </div>
+            </div>
             <button 
                 onClick={() => {
                   soundManager.playClick();
@@ -411,21 +454,25 @@ const GameLevel: React.FC<GameLevelProps> = ({ subject, levelIndex, onComplete, 
       {/* Complete Overlay */}
       {gameState === 'COMPLETE' && (
          <div className="absolute inset-0 bg-slate-900/95 flex flex-col items-center justify-center z-50 text-center p-6">
-             <div className="text-6xl mb-6 animate-float">🏆</div>
-             <h2 className="text-4xl font-bold text-white mb-2">Sector Secured!</h2>
-             <p className="text-cyan-200/60 text-xl mb-10">Defense Systems Charged</p>
+             <div className="text-6xl mb-6 animate-float">{lives > 0 ? '🏆' : '💥'}</div>
+             <h2 className="text-4xl font-bold text-white mb-2">{lives > 0 ? 'Sector Secured!' : 'Mission Failed!'}</h2>
+             <p className="text-cyan-200/60 text-xl mb-10">{lives > 0 ? 'Defense Systems Charged' : 'Systems Compromised'}</p>
              <div className="bg-slate-800/50 p-6 rounded-2xl border border-white/10 mb-8 min-w-[200px]">
-                 <div className="text-sm text-slate-400 uppercase tracking-widest mb-1">Total Score</div>
+                 <div className="text-sm text-slate-400 uppercase tracking-widest mb-1">Final Score</div>
                  <div className="text-5xl font-mono font-bold text-yellow-400">{score}</div>
              </div>
              <button 
                  onClick={() => {
                    soundManager.playClick();
-                   onComplete(score);
+                   if (lives > 0) {
+                     onComplete(score);
+                   } else {
+                     onExit();
+                   }
                  }}
-                 className="bg-yellow-500 hover:bg-yellow-400 text-yellow-950 text-xl font-bold py-4 px-10 rounded-full shadow-[0_0_20px_rgba(234,179,8,0.4)] transition-transform hover:scale-105"
+                 className={`${lives > 0 ? 'bg-yellow-500 hover:bg-yellow-400 text-yellow-950' : 'bg-slate-700 hover:bg-slate-600 text-white'} text-xl font-bold py-4 px-10 rounded-full shadow-lg transition-transform hover:scale-105`}
              >
-                 Continue Journey
+                 {lives > 0 ? 'Continue Journey' : 'Return to Map'}
              </button>
          </div>
       )}

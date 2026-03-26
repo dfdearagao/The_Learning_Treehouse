@@ -4,7 +4,7 @@ import { X } from 'lucide-react';
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onLogin: () => void;
+  onLogin: (name?: string) => void;
 }
 
 const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin }) => {
@@ -14,7 +14,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin }) => 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onLogin();
+    onLogin(username);
   };
 
   return (
@@ -31,13 +31,13 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin }) => 
         {/* Body */}
         <form onSubmit={handleSubmit} className="p-8 space-y-6">
           <div>
-            <label className="block text-slate-700 font-bold mb-2 ml-1">Username</label>
+            <label className="block text-slate-700 font-bold mb-2 ml-1">My Name</label>
             <input 
               type="text" 
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-blue-400 focus:ring-4 focus:ring-blue-100 outline-none transition-all font-semibold text-slate-600"
-              placeholder="Enter your explorer name"
+              placeholder="Enter your name"
             />
           </div>
           <div>

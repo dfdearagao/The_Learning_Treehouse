@@ -44,7 +44,7 @@ import { LESSON_CATALOG } from './lessonCatalog';
 
 export const MOCK_USER: User = {
   name: "Alex",
-  avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+  avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex&mouth=smile&eyes=happy&clothingGraphicProbability=0",
   level: 5,
   xp: 1250,
   coins: 450,
@@ -61,7 +61,11 @@ export const MOCK_USER: User = {
     ]
   },
   progress: {},
-  lessonProgress: {}
+  lessonProgress: {},
+  equippedItems: { hat: 'acc_hat' },
+  streaks: 4,
+  badges: ['Math Wizard', 'Mad Scientist'],
+  unlockedRooms: ['bedroom', 'lobby']
 };
 
 export const FEATURES: FeatureItem[] = [
@@ -120,6 +124,15 @@ export const HOW_IT_WORKS = [
     icon: Trophy,
     color: "bg-amber-100 text-amber-600"
   }
+];
+
+export const GRADES = [
+  { id: 'Kindergarten', title: 'Kindergarten', color: 'bg-red-400', icon: Smile },
+  { id: '1st Grade', title: '1st Grade', color: 'bg-orange-400', icon: Star },
+  { id: '2nd Grade', title: '2nd Grade', color: 'bg-yellow-400', icon: Sparkles },
+  { id: '3rd Grade', title: '3rd Grade', color: 'bg-green-400', icon: Rocket },
+  { id: '4th Grade', title: '4th Grade', color: 'bg-blue-400', icon: Globe2 },
+  { id: '5th Grade', title: '5th Grade', color: 'bg-purple-400', icon: Brain },
 ];
 
 export const CORE_SUBJECTS: SubjectItem[] = [
@@ -315,20 +328,22 @@ export const STORE_ITEMS: StoreItem[] = [
     { id: 'dec_plant', name: 'Potted Plant', price: 40, category: 'Decor', icon: '🪴', color: 'bg-green-200' },
     { id: 'dec_lamp', name: 'Lava Lamp', price: 70, category: 'Decor', icon: '💡', color: 'bg-red-200' },
     { id: 'dec_clock', name: 'Wall Clock', price: 30, category: 'Decor', icon: '🕰️', color: 'bg-stone-300' },
-    { id: 'dec_globe', name: 'World Globe', price: 90, category: 'Decor', icon: '🌍', color: 'bg-blue-300' },
+    { id: 'dec_globe', name: 'World Globe', price: 90, category: 'Decor', icon: '🌍', color: 'bg-blue-300', requiredSubject: 'Social Studies' },
     { id: 'dec_poster', name: 'Space Poster', price: 25, category: 'Decor', icon: '🖼️', color: 'bg-indigo-200' },
     { id: 'dec_paint', name: 'Art Easel', price: 110, category: 'Decor', icon: '🎨', color: 'bg-yellow-100' },
+    { id: 'dec_dino', name: 'Dino Skeleton', price: 200, category: 'Decor', icon: '🦖', color: 'bg-green-100', requiredSubject: 'Science' },
 
     // --- Tech ---
     { id: 'tech_tv', name: 'Television', price: 300, category: 'Tech', icon: '📺', color: 'bg-gray-300' },
     { id: 'tech_pc', name: 'Computer', price: 500, category: 'Tech', icon: '💻', color: 'bg-blue-100' },
-    { id: 'tech_telescope', name: 'Telescope', price: 250, category: 'Tech', icon: '🔭', color: 'bg-indigo-300' },
+    { id: 'tech_telescope', name: 'Telescope', price: 250, category: 'Tech', icon: '🔭', color: 'bg-indigo-300', requiredSubject: 'Science' },
     { id: 'tech_music', name: 'Boombox', price: 120, category: 'Tech', icon: '📻', color: 'bg-red-300' },
+    { id: 'tech_microscope', name: 'Microscope', price: 220, category: 'Tech', icon: '🔬', color: 'bg-teal-200', requiredSubject: 'Science' },
 
     // --- Pets ---
     { id: 'pet_dog', name: 'Puppy', price: 150, category: 'Pet', icon: '🐶', color: 'bg-amber-200' },
     { id: 'pet_cat', name: 'Kitten', price: 150, category: 'Pet', icon: '🐱', color: 'bg-orange-100' },
-    { id: 'pet_dragon', name: 'Mini Dragon', price: 800, category: 'Pet', icon: '🐉', color: 'bg-emerald-200' },
+    { id: 'pet_dragon', name: 'Mini Dragon', price: 800, category: 'Pet', icon: '🐉', color: 'bg-emerald-200', requiredLevel: 10 },
     { id: 'pet_fish', name: 'Goldfish', price: 60, category: 'Pet', icon: '🐠', color: 'bg-cyan-200' },
     
     // --- Toys ---
@@ -340,10 +355,30 @@ export const STORE_ITEMS: StoreItem[] = [
     // --- Accessories (Wearables/Misc) ---
     { id: 'acc_hat', name: 'Wizard Hat', price: 80, category: 'Accessory', icon: '🎩', color: 'bg-purple-300' },
     { id: 'acc_glasses', name: 'Cool Shades', price: 30, category: 'Accessory', icon: '🕶️', color: 'bg-black text-white' },
-    { id: 'acc_crown', name: 'Gold Crown', price: 300, category: 'Accessory', icon: '👑', color: 'bg-yellow-300' },
+    { id: 'acc_crown', name: 'Gold Crown', price: 300, category: 'Accessory', icon: '👑', color: 'bg-yellow-300', requiredLevel: 5 },
+    { id: 'acc_pharaoh', name: 'Pharaoh Crown', price: 400, category: 'Accessory', icon: '🪲', color: 'bg-amber-400', requiredSubject: 'Social Studies' },
+
+    // --- Rooms ---
+    { id: 'room_attic', name: 'Secret Attic', price: 1000, category: 'Room', icon: '🪜', color: 'bg-stone-400', requiredLevel: 5 },
+    { id: 'room_garden', name: 'Treehouse Garden', price: 1500, category: 'Room', icon: '🌻', color: 'bg-green-400', requiredLevel: 8 },
+
+    // --- Consumables ---
+    { id: 'cons_petfood', name: 'Pet Treat', price: 10, category: 'Consumable', icon: '🦴', color: 'bg-orange-200', isConsumable: true },
+    { id: 'cons_mystery', name: 'Mystery Box', price: 50, category: 'Consumable', icon: '🎁', color: 'bg-fuchsia-300', isConsumable: true },
 ];
 
 // ... (Rest of file unchanged, just updating MOCK_USER)
+export const AVATAR_SEEDS = [
+  // Boys
+  'Liam', 'Noah', 'Oliver', 'Elijah', 'James', 'William', 'Benjamin', 'Lucas', 'Henry', 'Theodore', 
+  'Jack', 'Levi', 'Alexander', 'Jackson', 'Julian', 'Kai', 'Leo', 'Sebastian', 'Mateo', 'Ezra', 
+  'Asher', 'Ethan', 'Luca', 'Miles', 'Silas',
+  // Girls
+  'Olivia', 'Emma', 'Charlotte', 'Amelia', 'Sophia', 'Mia', 'Isabella', 'Ava', 'Evelyn', 'Luna', 
+  'Harper', 'Sofia', 'Gianna', 'Eliana', 'Ella', 'Violet', 'Hazel', 'Willow', 'Layla', 'Aria', 
+  'Nora', 'Lily', 'Elena', 'Naomi', 'Mila'
+];
+
 const generateCurriculum = (subject: string): Record<string, Unit[]> => {
   const subjectLessons = LESSON_CATALOG.filter(l => l.subject === subject);
   const grades = Array.from(new Set(subjectLessons.map(l => l.grade)));
@@ -378,12 +413,21 @@ const generateCurriculum = (subject: string): Record<string, Unit[]> => {
         .filter(s => s.length > 0)
         .map(s => s.endsWith('.') ? s : s + '.');
 
+      const mockVocabulary = [
+        { word: 'Concept', definition: 'A general idea or understanding of something.' },
+        { word: 'Practice', definition: 'To perform an activity repeatedly to improve skill.' }
+      ];
+
       unit.lessons.push({
         id: entry.lessonId,
         title: entry.lessonName,
         duration: duration,
         type: type,
-        objectives: objectives
+        objectives: objectives,
+        vocabulary: entry.lessonId % 2 === 0 ? mockVocabulary : undefined,
+        learningStyles: entry.lessonId % 3 === 0 ? ['Visual', 'Auditory'] : undefined,
+        resources: entry.lessonId % 4 === 0 ? [{ title: 'Worksheet PDF', url: '#' }] : undefined,
+        videoUrl: entry.lessonId % 5 === 0 ? 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' : undefined
       });
     });
 

@@ -78,7 +78,7 @@ export const getMathWorksheets = (grade: string, lessonId: number, lessonTitle: 
 
         const questions = [];
         
-        for (let q = 1; q <= 10; q++) {
+        for (let q = 1; q <= 20; q++) {
             let item;
 
             // Strict Keyword Matching based on Curriculum Titles
@@ -127,7 +127,7 @@ export const getMathWorksheets = (grade: string, lessonId: number, lessonTitle: 
 
         worksheets.push({
             id: `math-${lessonId}-${i}`,
-            title: `Worksheet ${i}: ${difficulty} Practice`,
+            title: `${lessonTitle}: ${difficulty} Practice Set ${i}`,
             difficulty: difficulty,
             questions: questions
         });
